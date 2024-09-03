@@ -1,0 +1,8 @@
+langchain
+langchain_community
+chromadb
+sentence-transformers
+transformers
+torch
+colorlog
+pyyaml
