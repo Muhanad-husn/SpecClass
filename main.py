@@ -1,8 +1,6 @@
 import os
 from src.document_processor import DocumentProcessor
-from src.embedding_manager import EmbeddingManager
 from src.vector_store import VectorStore
-from src.classifier import SpecificationClassifier
 from src.report_generator import ReportGenerator
 from utils.logger import logger
 from utils.file_handler import file_handler
@@ -11,9 +9,7 @@ def main():
     try:
         # Initialize components
         doc_processor = DocumentProcessor()
-        embedding_manager = EmbeddingManager()
         vector_store = VectorStore()
-        classifier = SpecificationClassifier(vector_store, embedding_manager)
         report_generator = ReportGenerator()
 
         # Process all specification files
@@ -24,11 +20,14 @@ def main():
 
         # Handle input file
         input_file_path = file_handler.get_input_file()
-        input_df, input_column, sheet_name = file_handler.read_input_file(input_file_path)
+        input_df, input_column, _ = file_handler.read_input_file(input_file_path)
 
         results = []
         for item in input_df[input_column]:
-            similar_chunks = classifier.classify_item(item)
+            # Perform similarity search
+            similar_chunks = vector_store.similarity_search(item, k=3)
+            
+            # Generate report
             report = report_generator.generate_report(item, similar_chunks)
             
             # Extract primary classification and reasoning from the report
