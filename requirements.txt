@@ -1,3 +1,5 @@
+pandas
+llmsherpa
 langchain
 langchain_community
 chromadb

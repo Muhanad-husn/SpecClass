@@ -26,7 +26,7 @@ def setup_logger(name):
     console_handler.setFormatter(console_formatter)
 
     # File Handler
-    file_handler = logging.FileHandler(os.path.join(log_dir, 'application.log'))
+    file_handler = logging.FileHandler(os.path.join(log_dir, 'logging.log'), mode='w')
     file_handler.setLevel(logging.INFO)
     file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(file_formatter)
