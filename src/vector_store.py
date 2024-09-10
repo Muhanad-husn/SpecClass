@@ -82,7 +82,9 @@ class VectorStore:
             logger.error(f"Error storing documents in vector store: {str(e)}")
             raise RuntimeError(f"Failed to store documents: {str(e)}")
 
-    def similarity_search(self, query: str, k: int = 3):
+    def similarity_search(self, query: str, k: int = None):
+        if k is None:
+            k = config.get('similarity_search_k', 5)  # Default to 5 if not specified in config
         logger.info(f"Performing similarity search for query: {query}")
         try:
             results = self.vector_store.similarity_search_with_score(query, k=k)

@@ -10,6 +10,7 @@ chunk_strategy: "chunks"
 # embediing & vector store configuration
 embedding_model_name: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 collection_name: "specification_book_collection"
+similarity_search_k: 5
 
 # Logging configuration
 log_level: "INFO"
