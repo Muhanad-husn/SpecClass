@@ -11,7 +11,6 @@ env/
 # Logs
 *.logs
 
-
 # IDE specific files
 .vscode/
 .idea/
@@ -20,10 +19,19 @@ env/
 .DS_Store
 Thumbs.db
 
-
-
 # Files
 *.csv
 *.pdf
 *.docx
 *.xlsx
+
+# Ignore contents of data and chroma_db folders, but not the folders themselves
+data/input/*
+data/output/*
+data/specifications/*
+!data/input/.gitkeep
+!data/output/.gitkeep
+!data/specifications/.gitkeep
+!data/.gitkeep
+chroma_db/*
+!chroma_db/.gitkeep
