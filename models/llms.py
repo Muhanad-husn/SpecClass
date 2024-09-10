@@ -3,9 +3,10 @@ import requests
 import json
 import os
 from typing import List, Dict
-from utils.logger import logger
 from utils.config_loader import config
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
+from utils.logger import get_logger
+logger = get_logger(__name__)
 
 class BaseModel:
     def __init__(self, temperature: float, model: str, json_response: bool, max_retries: int = 3, retry_delay: int = 1):

@@ -38,3 +38,6 @@ claude_temperature: 0
 claude_json_response: true
 claude_max_retries: 3
 claude_retry_delay: 1
+
+# Pipeline configuration
+pipeline_batch_size: 50  # or whatever value you prefer

@@ -2,8 +2,9 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 from models.llms import OllamaModel, OpenAIModel, ClaudeModel
-from utils.logger import logger
 from utils.config_loader import config
+from utils.logger import get_logger
+logger = get_logger(__name__)
 
 class BaseAgent(ABC):
     def __init__(self, model_type: str = 'openai', model_name: str = None):

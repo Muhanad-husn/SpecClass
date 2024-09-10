@@ -1,14 +1,16 @@
 import os
 import shutil
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import numpy as np
 from langchain_chroma import Chroma
 from langchain_core.embeddings import Embeddings
 from langchain_core.documents import Document
 from chromadb.config import Settings
-from utils.config_loader import config
-from utils.logger import logger
+from utils.config_loader import Config
 from src.embedding_manager import EmbeddingManager
+from functools import lru_cache
+from utils.logger import get_logger
+logger = get_logger(__name__)
 
 class CustomEmbeddingFunction(Embeddings):
     def __init__(self, embedding_manager: EmbeddingManager):
@@ -22,11 +24,13 @@ class CustomEmbeddingFunction(Embeddings):
 
 class VectorStore:
     def __init__(self, default_collection_name='default'):
-        self.chroma_db_dir = config['chroma_db_dir']
+        self.config = Config()
+        self.chroma_db_dir = self.config.chroma_db_dir
         self.embedding_manager = EmbeddingManager()
         self.embedding_function = CustomEmbeddingFunction(self.embedding_manager)
         self.vector_store = None
         self.current_collection_name = default_collection_name
+        self.cache_size = self.config.get('vector_store_cache_size', 1000)
         self.initialize_vector_store(self.current_collection_name)
 
     def initialize_vector_store(self, collection_name):
@@ -82,13 +86,18 @@ class VectorStore:
             logger.error(f"Error storing documents in vector store: {str(e)}")
             raise RuntimeError(f"Failed to store documents: {str(e)}")
 
-    def similarity_search(self, query: str, k: int = None):
+    @lru_cache(maxsize=1000)
+    def _cached_similarity_search(self, query: str, k: int) -> Tuple[Document, float]:
+        results = self.vector_store.similarity_search_with_score(query, k=k)
+        return tuple(results)  # Convert list to tuple for hashability
+
+    def similarity_search(self, query: str, k: int = None) -> List[Tuple[Document, float]]:
         if k is None:
-            k = config.get('similarity_search_k', 5)  # Default to 5 if not specified in config
+            k = self.config.get('similarity_search_k', 5)
         logger.info(f"Performing similarity search for query: {query}")
         try:
-            results = self.vector_store.similarity_search_with_score(query, k=k)
-            return results
+            results = self._cached_similarity_search(query, k)
+            return list(results)  # Convert back to list
         except Exception as e:
             logger.error(f"Error performing similarity search: {str(e)}")
             raise RuntimeError(f"Failed to perform similarity search: {str(e)}")
@@ -99,6 +108,10 @@ class VectorStore:
         except Exception as e:
             logger.error(f"Error getting document count: {str(e)}")
             raise RuntimeError(f"Failed to get document count: {str(e)}")
+
+    def clear_cache(self):
+        self._cached_similarity_search.cache_clear()
+        logger.info("Similarity search cache cleared")
 
 # Example usage
 if __name__ == "__main__":
@@ -114,16 +127,24 @@ if __name__ == "__main__":
     
     print(f"Stored {len(sample_documents)} documents in the vector store.")
     
-    query_text = "TCO"
+    query_text = "sample text"
     results = vector_store.similarity_search(query_text, k=2)
     
     print("\nSearch Results:")
-    for doc in results:
+    for doc, score in results:
         print(f"Content: {doc.page_content}")
         print(f"Metadata: {doc.metadata}")
+        print(f"Score: {score}")
         print("---")
     
+    # Test caching
+    cached_results = vector_store.similarity_search(query_text, k=2)
+    print("\nCached search results retrieved.")
+    
     print(f"\nTotal documents in store: {vector_store.get_document_count()}")
+    
+    vector_store.clear_cache()
+    print("\nCache cleared.")
     
     vector_store.vector_store.delete_collection()
     print("\nTest completed and collection deleted.")

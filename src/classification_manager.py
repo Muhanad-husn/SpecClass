@@ -1,21 +1,17 @@
-# classification_manager.py
-from utils.file_handler import FileHandler
-from src.embedding_manager import EmbeddingManager
-from src.vector_store import VectorStore
-from utils.logger import logger
 from models.base_agent import BaseAgent
 from models.prompts import CLASSIFICATION_PROMPT, GUIDED_JSON
-from utils.config_loader import config
+from utils.config_loader import Config
 import json
+from functools import lru_cache
+from utils.logger import get_logger
+logger = get_logger(__name__)
 
 class ClassificationManager(BaseAgent):
     def __init__(self, model_type=None, model_name=None):
-        model_type = model_type or config['model_type']
-        model_name = model_name or config.get(f'{model_type}_model_name')
+        self.config = Config()
+        model_type = model_type or self.config.model_type
+        model_name = model_name or self.config.get(f'{model_type}_model_name')
         super().__init__(model_type=model_type, model_name=model_name)
-        self.file_handler = FileHandler()
-        self.embedding_manager = EmbeddingManager()
-        self.vector_store = VectorStore(default_collection_name=config['collection_name'])
         self.spec_book_description = None
         self.item_description = None
         self.weighted_spec = None
@@ -55,34 +51,16 @@ class ClassificationManager(BaseAgent):
                 'confidence': 0.0
             }
 
-    def process_new_items(self, pipeline_results):
-        try:
-            new_items = [result['item'] for result in pipeline_results]
-            logger.info(f"Processing {len(new_items)} new items from pipeline results")
-            
-            results = []
-            for result in pipeline_results:
-                similar_docs = self.vector_store.similarity_search(result['item'], k=3)
-                results.append({
-                    'item': result['item'],
-                    'similar_docs': similar_docs,
-                    'embedding': result['embedding']
-                })
+    @lru_cache(maxsize=1000)
+    def cached_invoke(self, context: str, query: str) -> dict:
+        return super().invoke(context, query)
 
-            logger.info(f"Successfully processed {len(results)} items")
-            return results
-        except Exception as e:
-            logger.error(f"Error in process_new_items: {str(e)}", exc_info=True)
-            raise
-
-    def classify_items(self, results):
+    def process_and_classify_items(self, items, similar_docs):
         classified_items = []
-        for result in results:
-            item = result['item']
-            context = "\n".join([doc[0].page_content if isinstance(doc, tuple) else doc.page_content for doc in result['similar_docs']])
-            
+        for item, docs in zip(items, similar_docs):
+            context = "\n".join([doc[0].page_content if isinstance(doc, tuple) else doc.page_content for doc in docs])
             try:
-                classification_result = self.invoke(context, item)
+                classification_result = self.cached_invoke(context, item)
                 classified_items.append({
                     'item': item,
                     'primary_classification': classification_result['primary_classification'],
