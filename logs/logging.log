@@ -1,0 +1,78 @@
+2024-09-10 17:50:43,062 - utils.logger - INFO - Loading embedding model: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+2024-09-10 17:50:45,738 - utils.logger - INFO - Embedding model loaded successfully
+2024-09-10 17:50:45,739 - utils.logger - INFO - Loading embedding model: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+2024-09-10 17:50:48,110 - utils.logger - INFO - Embedding model loaded successfully
+2024-09-10 17:50:48,111 - utils.logger - INFO - Initializing vector store with collection: specification_book_collection
+2024-09-10 17:50:48,507 - utils.logger - INFO - Initialized vector store at chroma_db with collection specification_book_collection
+2024-09-10 17:50:48,508 - utils.logger - INFO - Starting pipeline execution
+2024-09-10 17:50:48,508 - utils.logger - INFO - Starting document processing from: data/specifications/
+2024-09-10 17:50:48,511 - utils.logger - INFO - Processing file: Telegram_DSA _eporting.pdf
+2024-09-10 17:51:02,493 - utils.logger - INFO - Successfully processed Telegram_DSA _eporting.pdf, extracted 26 chunks
+2024-09-10 17:51:02,496 - utils.logger - INFO - Total processed chunks: 26
+2024-09-10 17:51:02,497 - utils.logger - INFO - Processed 26 documents
+2024-09-10 17:51:13,145 - utils.logger - INFO - Storing 26 documents in ChromaDB collection 'specification_book_collection'
+2024-09-10 17:51:23,155 - utils.logger - INFO - Stored 26 documents in ChromaDB collection 'specification_book_collection'
+2024-09-10 17:51:23,156 - utils.logger - INFO - Document processing and storage completed successfully
+2024-09-10 17:51:23,157 - utils.logger - INFO - Verifying document storage
+2024-09-10 17:51:23,159 - utils.logger - INFO - Total documents in storage: 26
+2024-09-10 17:51:23,159 - utils.logger - INFO - Performing similarity search for query: sample query for verification
+2024-09-10 17:51:23,266 - utils.logger - INFO - Retrieved 5 sample documents:
+2024-09-10 17:51:23,267 - utils.logger - INFO - Sample 1:
+2024-09-10 17:51:23,267 - utils.logger - INFO - Content: 
+ 
+ 
+  For      each      piece      of      content,      submit      report      as      per      ...
+2024-09-10 17:51:23,269 - utils.logger - INFO - Metadata: {'chunk_number': 1, 'chunk_type': 'para', 'source': 'data/specifications/Telegram_DSA _eporting.pdf'}
+2024-09-10 17:51:23,269 - utils.logger - INFO - Similarity Score: 11.709224700927734
+2024-09-10 17:51:23,270 - utils.logger - INFO - Sample 2:
+2024-09-10 17:51:23,270 - utils.logger - INFO - Content: 
+ 
+ 
+  Gather      content      for      the      relevant      channel      using      “DSA      re...
+2024-09-10 17:51:23,272 - utils.logger - INFO - Metadata: {'chunk_number': 0, 'chunk_type': 'para', 'source': 'data/specifications/Telegram_DSA _eporting.pdf'}
+2024-09-10 17:51:23,273 - utils.logger - INFO - Similarity Score: 12.629535675048828
+2024-09-10 17:51:23,273 - utils.logger - INFO - Sample 3:
+2024-09-10 17:51:23,274 - utils.logger - INFO - Content: 
+ 
+ 
+  Include      these   
+ 
+3      things      in      each      report....
+2024-09-10 17:51:23,274 - utils.logger - INFO - Metadata: {'chunk_number': 2, 'chunk_type': 'para', 'source': 'data/specifications/Telegram_DSA _eporting.pdf'}
+2024-09-10 17:51:23,276 - utils.logger - INFO - Similarity Score: 13.064062118530273
+2024-09-10 17:51:23,276 - utils.logger - INFO - Sample 4:
+2024-09-10 17:51:23,277 - utils.logger - INFO - Content: 
+a.      Brief      description      of      the      violative      content...
+2024-09-10 17:51:23,277 - utils.logger - INFO - Metadata: {'chunk_number': 3, 'chunk_type': 'list_item', 'source': 'data/specifications/Telegram_DSA _eporting.pdf'}
+2024-09-10 17:51:23,278 - utils.logger - INFO - Similarity Score: 13.268587112426758
+2024-09-10 17:51:23,278 - utils.logger - INFO - Sample 5:
+2024-09-10 17:51:23,279 - utils.logger - INFO - Content: 
+ 
+ 
+  ENG&toc=OJ%3AL%3A2022%3A086%3AT      OC),  
+ 
+  Reason:      The      Houthis      are      a...
+2024-09-10 17:51:23,279 - utils.logger - INFO - Metadata: {'chunk_number': 6, 'chunk_type': 'para', 'source': 'data/specifications/Telegram_DSA _eporting.pdf'}
+2024-09-10 17:51:23,280 - utils.logger - INFO - Similarity Score: 13.621179580688477
+2024-09-10 17:51:23,280 - utils.logger - INFO - Storage verification completed
+2024-09-10 17:51:40,257 - utils.logger - INFO - Loading embedding model: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+2024-09-10 17:51:42,464 - utils.logger - INFO - Embedding model loaded successfully
+2024-09-10 17:51:42,464 - utils.logger - INFO - Loading embedding model: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+2024-09-10 17:51:44,660 - utils.logger - INFO - Embedding model loaded successfully
+2024-09-10 17:51:44,661 - utils.logger - INFO - Initializing vector store with collection: specification_book_collection
+2024-09-10 17:51:44,665 - utils.logger - INFO - Initialized vector store at chroma_db with collection specification_book_collection
+2024-09-10 17:51:52,603 - utils.logger - INFO - Read 9 rows from data/input/DSA reporting - violative content examples.xlsx
+2024-09-10 17:51:52,604 - utils.logger - INFO - Chosen column: description
+2024-09-10 17:51:52,870 - utils.logger - INFO - Performing similarity search for query: Video released by the US-designated terrorist group, Lebanese Hezbollah (LH), launching attacks on Israel.
+2024-09-10 17:52:26,722 - utils.logger - INFO - Performing similarity search for query: A video released by the US-designated terrorist group, Lebanese Hezbollah, attacking Israel.
+2024-09-10 17:52:28,339 - utils.logger - INFO - Performing similarity search for query: A video containing a speech for the US-designated terrorist Abdul Malik Al-Houthi, leader of the US-designated terrorist group Ansar Allah, locally known as Houthis. The speech contains threats of violence and terrorism on Israel on July 25. On the left side of him, the poster in Arabic says, "... death to America, death to Israel, damn on the Jews."
+2024-09-10 17:52:29,605 - utils.logger - INFO - Performing similarity search for query: An image glorifying and promoting for the US-designated terrorist Hasan Nasrallah, leader of the US-designated terrorist group Lebanese Hezbollah (LH).
+2024-09-10 17:52:32,257 - utils.logger - INFO - Performing similarity search for query: In this tweet, "The Islamic resistance in Lebanon targets the positions of the Zionist enemy in Manara and Shatola settlements." The tweet is to promote and glorify the US-designated terrorist group, Lebanese Hezbollah (LH)
+2024-09-10 17:52:35,058 - utils.logger - INFO - Performing similarity search for query: A video glorifying and promoting for the US-designated terrorist Hasan Nasrallah (featured in the video), leader of the US-designated terrorist group, Lebanese Hezbollah (LH) threatening to launch further attacks.
+2024-09-10 17:52:37,105 - utils.logger - INFO - Performing similarity search for query: A video containing a speech for the US-designated terrorist Abdul Malik Al-Houthi, leader of the US-designated terrorist group Ansar Allah, locally known as Houthis. The speech contains threats of violence and terrorism on Israel on May 23. On the left side of him, the poster in Arabic says, "... death to America, death to Israel, damn on the Jews."
+2024-09-10 17:52:38,465 - utils.logger - INFO - Performing similarity search for query: A video production showing the US-designated terrorist Abdul Malik Al-Houthi sending threats to Israelis. The video contains footage of attacks on Israel as a form of threat.
+2024-09-10 17:52:40,492 - utils.logger - INFO - Performing similarity search for query: Statement by the US-designated terrorist group, Lebanese Hezbollah, claiming responsibility of attacking an Israeli post on August 2.
+2024-09-10 17:52:42,110 - utils.logger - INFO - Writing results to data/output/classification_results.csv
+2024-09-10 17:52:42,113 - utils.logger - INFO - Results successfully written to data/output/classification_results.csv
+2024-09-10 17:52:42,113 - utils.logger - INFO - Successfully classified 9 items
+2024-09-10 17:52:42,114 - utils.logger - INFO - Pipeline execution completed successfully

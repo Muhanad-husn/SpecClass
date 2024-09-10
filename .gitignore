@@ -9,10 +9,8 @@ env/
 .env
 
 # Logs
-logs/
+*.logs
 
-# ChromaDB
-chroma_db/
 
 # IDE specific files
 .vscode/
@@ -22,8 +20,7 @@ chroma_db/
 .DS_Store
 Thumbs.db
 
-# Project specific
-data/specifications/specification_book.pdf
+
 
 # Files
 *.csv
