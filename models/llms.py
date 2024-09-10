@@ -1,3 +1,4 @@
+# llms.py
 import requests
 import json
 import os
@@ -16,15 +17,16 @@ class BaseModel:
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1), retry=retry_if_exception_type(requests.RequestException))
     def _make_request(self, url, headers, payload):
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
         return response.json()
+    
 
 class OllamaModel(BaseModel):
-    def __init__(self):
+    def __init__(self, model: str = None):
         super().__init__(
             temperature=config.get('ollama_temperature', 0),
-            model=config['ollama_model_name'],
+            model=model or config['ollama_model_name'],
             json_response=config.get('ollama_json_response', False),
             max_retries=config.get('ollama_max_retries', 3),
             retry_delay=config.get('ollama_retry_delay', 1)
@@ -62,60 +64,81 @@ class OllamaModel(BaseModel):
         except json.JSONDecodeError as e:
             logger.error(f"Error processing Ollama response: {str(e)}")
             return json.dumps({"error": f"Error processing response: {str(e)}"})
+        
 
-class VllmModel(BaseModel):
-    def __init__(self):
+class ClaudeModel(BaseModel):
+    def __init__(self, model: str = None):
         super().__init__(
-            temperature=config.get('vllm_temperature', 0),
-            model=config['vllm_model_name'],
-            json_response=config.get('vllm_json_response', False),
-            max_retries=config.get('vllm_max_retries', 5),
-            retry_delay=config.get('vllm_retry_delay', 1)
+            temperature=config.get('claude_temperature', 0),
+            model=model or config['claude_model_name'],
+            json_response=config.get('claude_json_response', False),
+            max_retries=config.get('claude_max_retries', 3),
+            retry_delay=config.get('claude_retry_delay', 1)
         )
-        self.headers = {"Content-Type": "application/json"}
-        self.model_endpoint = config['vllm_model_endpoint'] + 'v1/chat/completions'
-        self.stop = config.get('vllm_stop', None)
+        self.api_key = config.get('ANTHROPIC_API_KEY')
+        if not self.api_key:
+            raise ValueError("ANTHROPIC_API_KEY is not set in the environment variables")
+        self.headers = {
+            'Content-Type': 'application/json', 
+            'x-api-key': self.api_key,
+            'anthropic-version': '2023-06-01'
+        }
+        self.model_endpoint = "https://api.anthropic.com/v1/messages"
 
-    def invoke(self, messages: List[Dict[str, str]], guided_json: dict = None) -> str:
+    def invoke(self, messages: List[Dict[str, str]]) -> str:
+        system = messages[0]["content"]
+        user = messages[1]["content"]
+
+        content = f"{system}\n\nHuman: {user}\n\nAssistant:"
+        if self.json_response:
+            content += " Your output must be JSON formatted. Return only the specified JSON format, without any additional text."
+
         payload = {
             "model": self.model,
-            "messages": messages,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": content
+                }
+            ],
+            "max_tokens": 4096,
             "temperature": self.temperature,
-            "stop": self.stop,
         }
 
-        if self.json_response:
-            payload["response_format"] = {"type": "json_object"}
-            payload["guided_json"] = guided_json
-        
         try:
-            request_response_json = self._make_request(self.model_endpoint, self.headers, payload)
-            response_content = request_response_json['choices'][0]['message']['content']
+            response_json = self._make_request(self.model_endpoint, self.headers, payload)
+            
+            if 'content' not in response_json or not response_json['content']:
+                raise ValueError("No content in response")
+
+            response_content = response_json['content'][0]['text']
             
             if self.json_response:
-                response = json.dumps(json.loads(response_content))
+                return json.dumps(json.loads(response_content))
             else:
-                response = str(response_content)
-            
-            return response
+                return response_content
+
         except requests.RequestException as e:
-            logger.error(f"Error in invoking Vllm model: {str(e)}")
+            logger.error(f"Error in invoking Claude model: {str(e)}")
             return json.dumps({"error": f"Error in invoking model: {str(e)}"})
-        except json.JSONDecodeError as e:
-            logger.error(f"Error processing Vllm response: {str(e)}")
+        except (ValueError, KeyError, json.JSONDecodeError) as e:
+            logger.error(f"Error processing Claude response: {str(e)}")
             return json.dumps({"error": f"Error processing response: {str(e)}"})
 
+
 class OpenAIModel(BaseModel):
-    def __init__(self):
+    def __init__(self, model: str = None):
         super().__init__(
             temperature=config.get('openai_temperature', 0),
-            model=config['openai_model_name'],
+            model=model or config['openai_model_name'],
             json_response=config.get('openai_json_response', False),
             max_retries=config.get('openai_max_retries', 3),
             retry_delay=config.get('openai_retry_delay', 1)
         )
         self.model_endpoint = 'https://api.openai.com/v1/chat/completions'
-        self.api_key = config['openai_api_key']
+        self.api_key = config.get('OPENAI_API_KEY')
+        if not self.api_key:
+            raise ValueError("OPENAI_API_KEY is not set in the environment variables")
         self.headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {self.api_key}'

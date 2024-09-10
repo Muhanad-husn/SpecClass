@@ -14,7 +14,7 @@ class Pipeline:
         self.embedding_manager = EmbeddingManager()
         self.vector_store = VectorStore(default_collection_name='specification_book_collection')
         self.file_handler = FileHandler()
-        self.classification_manager = ClassificationManager()
+        self.classification_manager = None
         self.logger = logger
         self.batch_size = config.get('pipeline_batch_size', 32)
 
@@ -129,7 +129,7 @@ class Pipeline:
         
         return classified_items
 
-    def run(self, reset=False):
+    def run(self, reset=False, model_type=None, model_name=None):
         try:
             self.logger.info("Starting pipeline execution")
             
@@ -140,6 +140,10 @@ class Pipeline:
             self.process_and_store_documents()
             self.verify_storage()
             
+            if model_type is None:
+                model_type = self.prompt_for_model_type()
+            
+            self.classification_manager = ClassificationManager(model_type=model_type, model_name=model_name)
             classified_items = self.process_and_classify_items()
             
             self.logger.info(f"Successfully classified {len(classified_items)} items")
@@ -162,13 +166,25 @@ class Pipeline:
             raise
 
     @staticmethod
+    def prompt_for_model_type():
+        valid_types = ["ollama", "openai", "claude"]
+        while True:
+            model_type = input("Please enter the model type (ollama/openai/claude): ").lower()
+            if model_type in valid_types:
+                return model_type
+            else:
+                print(f"Invalid model type. Please choose from {', '.join(valid_types)}.")
+
+    @staticmethod
     def main():
         parser = argparse.ArgumentParser(description="Run the document classification pipeline.")
         parser.add_argument("--reset", action="store_true", help="Reset the vector store before processing")
+        parser.add_argument("--model-type", choices=["ollama", "openai", "claude"], help="Specify the model type to use")
+        parser.add_argument("--model-name", help="Specify the model name to use")
         args = parser.parse_args()
 
         pipeline = Pipeline()
-        pipeline.run(reset=args.reset)
+        pipeline.run(reset=args.reset, model_type=args.model_type, model_name=args.model_name)
 
 if __name__ == "__main__":
     Pipeline.main()

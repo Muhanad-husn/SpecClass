@@ -1,21 +1,23 @@
+# base_agent.py
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from models.llms import OllamaModel, VllmModel, OpenAIModel
+from models.llms import OllamaModel, OpenAIModel, ClaudeModel
 from utils.logger import logger
 from utils.config_loader import config
 
 class BaseAgent(ABC):
-    def __init__(self, model_type: str = 'vllm'):
+    def __init__(self, model_type: str = 'openai', model_name: str = None):
         self.model_type = model_type
+        self.model_name = model_name or config.get(f'{model_type}_model_name')
         self.llm = self._get_llm()
 
     def _get_llm(self):
         if self.model_type == 'ollama':
-            return OllamaModel()
-        elif self.model_type == 'vllm':
-            return VllmModel()
+            return OllamaModel(model=self.model_name)
         elif self.model_type == 'openai':
-            return OpenAIModel()
+            return OpenAIModel(model=self.model_name)
+        elif self.model_type == 'claude':
+            return ClaudeModel(model=self.model_name)
         else:
             raise ValueError(f"Unsupported model type: {self.model_type}")
 

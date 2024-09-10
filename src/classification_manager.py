@@ -1,3 +1,4 @@
+# classification_manager.py
 from utils.file_handler import FileHandler
 from src.embedding_manager import EmbeddingManager
 from src.vector_store import VectorStore
@@ -8,8 +9,10 @@ from utils.config_loader import config
 import json
 
 class ClassificationManager(BaseAgent):
-    def __init__(self):
-        super().__init__(model_type=config['model_type'])
+    def __init__(self, model_type=None, model_name=None):
+        model_type = model_type or config['model_type']
+        model_name = model_name or config.get(f'{model_type}_model_name')
+        super().__init__(model_type=model_type, model_name=model_name)
         self.file_handler = FileHandler()
         self.embedding_manager = EmbeddingManager()
         self.vector_store = VectorStore(default_collection_name=config['collection_name'])

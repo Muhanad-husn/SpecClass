@@ -1,17 +1,39 @@
-llmsherpa_api_url: "http://localhost:5010/api/parseDocument?renderFormat=all&useNewIndentParser=yes"
-embedding_model_name: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
-llm_model_name: "microsoft/Phi-3-mini-4k-instruct"
-collection_name: "specification_book_collection"
+# Datainput % output configuration
 specifications_dir: "data/specifications/"
 input_data_path: "data/input/"
 output_data_path: "data/output/"
+
+# Chunking configuration
+llmsherpa_api_url: "http://localhost:5010/api/parseDocument?renderFormat=all&useNewIndentParser=yes"
 chunk_strategy: "chunks"
+
+# embediing & vector store configuration
+embedding_model_name: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+collection_name: "specification_book_collection"
+
+# Logging configuration
 log_level: "INFO"
 log_dir: "logs"
 chroma_db_dir: "chroma_db"
-model_type: "openai"  # Can be "ollama", "vllm", or "openai"
-openai_api_key: "sk-proj-AmnhwU1MeNxrTP3txj0cT3BlbkFJS7qWrSfwy9f0ZLSnFQ8Y"
-openai_model_name: "gpt-4o-mini"  # or whichever model you're using
+
+# Model configuration
+ollama_model_name: "phi3.5:3.8b-mini-instruct-q8_0"
+openai_model_name: "gpt-4o-mini"
+claude_model_name: "claude-3-5-sonnet-20240620"
+
+# Model-specific settings
+ollama_temperature: 0
+ollama_json_response: true
+ollama_max_retries: 3
+ollama_retry_delay: 1
+ollama_model_endpoint: "http://localhost:11434/api/generate"
+
 openai_temperature: 0
 openai_json_response: true
-vllm_model_name: "gpt-3.5-turbo"
+openai_max_retries: 3
+openai_retry_delay: 1
+
+claude_temperature: 0
+claude_json_response: true
+claude_max_retries: 3
+claude_retry_delay: 1
