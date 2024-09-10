@@ -1,11 +1,12 @@
+import argparse
+from utils.logger import logger
+from utils.config_loader import config
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.vector_store import VectorStore
-from utils.logger import logger
-from utils.config_loader import config
+from src.classification_manager import ClassificationManager
 from utils.file_handler import FileHandler
 from tqdm import tqdm
-import os
 
 class Pipeline:
     def __init__(self):
@@ -13,10 +14,12 @@ class Pipeline:
         self.embedding_manager = EmbeddingManager()
         self.vector_store = VectorStore(default_collection_name='specification_book_collection')
         self.file_handler = FileHandler()
+        self.classification_manager = ClassificationManager()
+        self.logger = logger
         self.batch_size = config.get('pipeline_batch_size', 32)
 
     def reset_vector_store(self):
-        logger.info("Resetting vector store")
+        self.logger.info("Resetting vector store")
         self.vector_store.reset_vector_store()
 
     def process_and_store_documents(self):
@@ -83,54 +86,89 @@ class Pipeline:
             logger.error(f"Error in getting items and contexts: {str(e)}")
             raise
 
-    def process_items(self, k=3):
-        logger.info("Processing items for classification")
-        try:
-            items, contexts, chosen_column = self.get_items_and_contexts(k)
-            results = []
-
-            for item, context in zip(items, contexts):
-                embedding = self.embedding_manager.encode(item)
-                similar_docs = self.vector_store.similarity_search(item, k=k)
-                
-                result = {
+    def process_and_classify_items(self):
+        file_path = self.file_handler.get_input_file()
+        items, chosen_column, _ = self.file_handler.read_input_file(file_path)
+        
+        classified_items = []
+        
+        for item in tqdm(items, desc="Processing and classifying items"):
+            # Embed the item
+            embedding = self.embedding_manager.encode(item)
+            
+            # Retrieve similar documents
+            similar_docs = self.vector_store.similarity_search(item, k=3)
+            
+            # Prepare context for classification
+            context = "\n".join([doc[0].page_content if isinstance(doc, tuple) else doc.page_content for doc in similar_docs])
+            
+            # Classify the item
+            try:
+                classification_result = self.classification_manager.invoke(context, item)
+                classified_item = {
                     'item': item,
-                    'embedding': embedding,
-                    'context': context,
-                    'similar_docs': [doc[0] if isinstance(doc, tuple) else doc for doc in similar_docs]
+                    'primary_classification': classification_result['primary_classification'],
+                    'classification': classification_result['classification'],
+                    'reasoning': classification_result['reasoning'],
+                    'confidence': classification_result['confidence']
                 }
-                results.append(result)
+            except Exception as e:
+                self.logger.error(f"Error classifying item: {str(e)}")
+                classified_item = {
+                    'item': item,
+                    'primary_classification': 'Error',
+                    'classification': 'Error',
+                    'reasoning': f"Error in classification: {str(e)}",
+                    'confidence': 0.0
+                }
+            
+            classified_items.append(classified_item)
+        
+        # Write results to file
+        self.file_handler.write_results([item['item'] for item in classified_items], classified_items, chosen_column)
+        
+        return classified_items
 
-            logger.info(f"Processed {len(results)} items")
-            return results
-        except Exception as e:
-            logger.error(f"Error in processing items: {str(e)}")
-            raise
-
-    def run(self):
+    def run(self, reset=False):
         try:
-            logger.info("Starting pipeline execution")
-            self.reset_vector_store()
+            self.logger.info("Starting pipeline execution")
+            
+            if reset:
+                self.logger.info("Resetting vector store as requested.")
+                self.reset_vector_store()
+            
             self.process_and_store_documents()
             self.verify_storage()
             
-            results = self.process_items()
+            classified_items = self.process_and_classify_items()
             
-            # Example of how to use the results
-            for i, result in enumerate(results[:5], 1):  # Print first 5 results
-                logger.info(f"Result {i}:")
-                logger.info(f"Item: {result['item'][:50]}...")
-                logger.info(f"Embedding shape: {result['embedding'].shape}")
-                logger.info(f"Context length: {len(result['context'])}")
-                logger.info(f"Number of similar docs: {len(result['similar_docs'])}")
-                logger.info("---")
+            self.logger.info(f"Successfully classified {len(classified_items)} items")
+            self.logger.info("Pipeline execution completed successfully")
             
-            logger.info("Pipeline execution completed successfully")
-            return results
+            # Print a summary of the results
+            print(f"\nClassified {len(classified_items)} items.")
+            print("\nSample results:")
+            for item in classified_items[:5]:  # Print first 5 results
+                print(f"\nItem: {item['item'][:50]}...")
+                print(f"Primary Classification: {item['primary_classification']}")
+                print(f"Overall Classification: {item['classification']}")
+                print(f"Confidence: {item['confidence']}")
+
+            print("\nClassification process completed. Results have been written to CSV.")
+            
+            return classified_items
         except Exception as e:
-            logger.error(f"Error in pipeline execution: {str(e)}")
+            self.logger.error(f"Error in pipeline execution: {str(e)}")
             raise
 
+    @staticmethod
+    def main():
+        parser = argparse.ArgumentParser(description="Run the document classification pipeline.")
+        parser.add_argument("--reset", action="store_true", help="Reset the vector store before processing")
+        args = parser.parse_args()
+
+        pipeline = Pipeline()
+        pipeline.run(reset=args.reset)
+
 if __name__ == "__main__":
-    pipeline = Pipeline()
-    pipeline.run()
+    Pipeline.main()
