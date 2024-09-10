@@ -18,10 +18,6 @@ This project implements an optimized document classification pipeline that proce
    ```bash
    git clone https://github.com/Muhanad-husn/SpecClass.git
    cd SpecClass
-<<<<<<< HEAD
-=======
-
->>>>>>> c4e630120b0ee94336cc04b8182d0d29496aca12
    ```
 
 2. **Set up a virtual Conda environment:**
@@ -62,9 +58,9 @@ This project implements an optimized document classification pipeline that proce
 
 ## Usage
 
-P# SpecClass Usage Instructions
+SpecClass Usage Instructions
 
-### Preparation
+**Preparation**
 
 1. Place your specification documents in the `data/specifications` directory.
    - Supported formats: PDF, DOCX, HTML, MD, TXT
@@ -72,7 +68,7 @@ P# SpecClass Usage Instructions
 2. Place the items to be classified in the `data/input` directory.
    - Supported formats: CSV, XLSX
 
-### Configuration
+**Configuration**
 
 1. Open `config/config.yaml` and adjust settings as needed.
    - Note: The default number of documents retrieved from the vector store for each item is 5. Adjust this based on your specification book's content.
@@ -82,7 +78,7 @@ P# SpecClass Usage Instructions
    - Ollama: phi-3.5-8b
    - Claude: claude-3.5-sonnet
 
-### Running the Pipeline
+**Running the Pipeline**
 
 Execute the following command:
 
@@ -95,7 +91,7 @@ Options:
 - `--model-type`: Specify the model type (ollama, openai, or claude)
 - `--model-name`: Override the default model name
 
-### Interactive Prompts
+**Interactive Prompts**
 
 The application will ask you to provide:
 
