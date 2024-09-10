@@ -88,4 +88,4 @@ Contributions are welcome! Please feel free to fork the repo or submit a Pull Re
 
 ## License
 
-This project is not licensed.
+Apache  2.0
