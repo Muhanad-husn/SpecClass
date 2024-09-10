@@ -18,11 +18,15 @@ This project implements an optimized document classification pipeline that proce
    ```bash
    git clone https://github.com/Muhanad-husn/SpecClass.git
    cd SpecClass
+<<<<<<< HEAD
+=======
+
+>>>>>>> c4e630120b0ee94336cc04b8182d0d29496aca12
    ```
 
 2. **Set up a virtual Conda environment:**
    ```bash
-   conda create --name doc_classification python=3.8
+   conda create --name doc_classification python=3.12.4
    conda activate doc_classification
    ```
 
@@ -87,4 +91,4 @@ Contributions are welcome! Please feel free to fork the repo or submit a Pull Re
 
 ## License
 
-This project is not licensed.
+Apache  2.0
