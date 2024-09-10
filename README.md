@@ -62,7 +62,29 @@ This project implements an optimized document classification pipeline that proce
 
 ## Usage
 
-Run the pipeline using the following command:
+P# SpecClass Usage Instructions
+
+### Preparation
+
+1. Place your specification documents in the `data/specifications` directory.
+   - Supported formats: PDF, DOCX, HTML, MD, TXT
+
+2. Place the items to be classified in the `data/input` directory.
+   - Supported formats: CSV, XLSX
+
+### Configuration
+
+1. Open `config/config.yaml` and adjust settings as needed.
+   - Note: The default number of documents retrieved from the vector store for each item is 5. Adjust this based on your specification book's content.
+
+2. Default models (can be overridden with `--model-name`):
+   - OpenAI: gpt-4o-mini
+   - Ollama: phi-3.5-8b
+   - Claude: claude-3.5-sonnet
+
+### Running the Pipeline
+
+Execute the following command:
 
 ```bash
 python pipeline.py [--reset] [--model-type {ollama|openai|claude}] [--model-name MODEL_NAME]
@@ -70,10 +92,27 @@ python pipeline.py [--reset] [--model-type {ollama|openai|claude}] [--model-name
 
 Options:
 - `--reset`: Reset the vector store before processing
-- `--model-type`: Specify the model type to use (ollama, openai, or claude)
-- `--model-name`: Specify the model name to use.
+- `--model-type`: Specify the model type (ollama, openai, or claude)
+- `--model-name`: Override the default model name
 
-The pipeline will process the documents, classify the items, and output the results to a CSV file in the specified output directory.
+### Interactive Prompts
+
+The application will ask you to provide:
+
+1. Model type to use (if not specified in command line)
+2. Sheet name and column containing items to classify (for Excel input)
+3. Short description of the specification book
+4. Description of items to be classified
+5. Any specifications that should be weighted more heavily in case of equal similarity
+
+## Output
+
+The pipeline will:
+1. Process the specification documents
+2. Classify the input items
+3. Output results to a CSV file in the specified output directory
+
+For detailed logs and error messages, check the `logs` directory.
 
 ## Project Structure
 
