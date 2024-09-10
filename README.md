@@ -16,8 +16,8 @@ This project implements an optimized document classification pipeline that proce
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/document-classification-pipeline.git
-   cd document-classification-pipeline
+   git clone https://github.com/Muhanad-husn/SpecClass.git
+   cd SpecClass
    ```
 
 2. **Set up a virtual Conda environment:**
