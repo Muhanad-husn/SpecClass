@@ -21,7 +21,7 @@ Your response should be in JSON format with the following structure:
 {{
     "primary_classification": "The primary classification category, considering the weighted specification if provided",
     "classification": "The overall classification category",
-    "reasoning": "A brief explanation for the classification, including why the primary classification was chosen if different from the overall classification. This explanation should ONLY reference information provided in the context and item description.",
+    "reasoning": "An explanation for the classification, including why the primary classification was chosen if different from the overall classification. This explanation should reference information provided in the provided item description.",
     "confidence": A number between 0 and 1 representing your confidence in the classification
 }}
 

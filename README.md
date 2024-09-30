@@ -36,18 +36,18 @@ This project implements an optimized document classification pipeline that proce
    - Ensure you have Docker installed, and the Docker daemon is running.
    - Pull the Docker image:
      ```bash
-     docker pull jamesmtc/nlm-ingestor:latest
+     docker pull ghcr.io/nlmatics/nlm-ingestor:latest
      ```
    - Run the container:
      ```bash
-     docker run -p 5010:5001 jamesmtc/nlm-ingestor:latest
+     docker run -p 5010:5001 ghcr.io/nlmatics/nlm-ingestor:latest
      ```
 
    **Note:** The Docker image is meant for development environments only. For production, users must set up their own server configuration.
 
    The `nlm-ingestor` server uses a modified version of Apache Tika for document parsing. The server can be deployed locally and provides an easy way to parse and intelligently chunk various document types, including "HTML", "PDF", "Markdown", and "Text". There is an option to enable OCR; refer to the documentation for more details.
 
-   This Docker image was adapted from the interesting project [meta_expert](https://github.com/brainqub3/meta_expert/blob/main/prompt_engineering/jar3d_meta_prompt.md).
+   This Docker image was adapted from the nlm-ingestor repo [nlm-ingestor](https://github.com/nlmatics/nlm-ingestor).
 
 5. **Configure the application:**
    - Copy the `.env.example` file to `.env` and fill in your API keys:

@@ -4,7 +4,7 @@ input_data_path: "data/input/"
 output_data_path: "data/output/"
 
 # Chunking configuration
-llmsherpa_api_url: "http://localhost:5010/api/parseDocument?renderFormat=all&useNewIndentParser=yes"
+llmsherpa_api_url: "http://localhost:5010/api/parseDocument?renderFormat=all"
 chunk_strategy: "chunks"
 
 # embediing & vector store configuration

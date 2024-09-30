@@ -31,7 +31,7 @@ class Logger:
         
         # Console handler
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(logging.DEBUG)
         console_handler.setFormatter(console_formatter)
         
         # Add handlers to main logger
